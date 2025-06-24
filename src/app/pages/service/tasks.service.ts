@@ -15,6 +15,14 @@ export class TasksService {
         return this.http.get(this.tasksApiUrl + "/taskDefinitionKey/" + taskDefinitionKey);
     }
 
+    getTaskByProcessInstanceId(processInstanceId: string): Observable<any> {
+        return this.http.get(this.tasksApiUrl + "/processInstance/" + processInstanceId);
+    }
+
+    completeDecisionTask(processInstanceId: string, decision: boolean): Observable<any> {
+        return this.http.post(this.tasksApiUrl + "/complete/decision/" + processInstanceId + "/" + decision, {});
+    }
+
     findAllOrders(): Observable<any> {
         return this.http.get(this.ordersApiUrl + "/all");
     }

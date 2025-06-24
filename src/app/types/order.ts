@@ -1,6 +1,6 @@
 export interface Order {
-    id?: number;
-    amountToBorrow?: number;
-    decision?: boolean;
+    id?: number | null;
+    amountToBorrow?: number | null;
+    decision?: boolean | null;
     signature?: string;
 }

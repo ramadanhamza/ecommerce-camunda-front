@@ -32,7 +32,7 @@ export default [
         loadComponent: () => import('./orderhistory').then((c) => c.OrderHistory)
     },
     {
-        path: 'order-summary',
+        path: 'order-summary/:id',
         data: { breadcrumb: 'Order Summary' },
         loadComponent: () => import('./ordersummary').then((c) => c.OrderSummary)
     }

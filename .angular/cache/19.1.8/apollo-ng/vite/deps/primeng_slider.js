@@ -1,18 +1,17 @@
 import {
   AutoFocus
-} from "./chunk-3GFQ46KE.js";
+} from "./chunk-LCQJLVAD.js";
 import "./chunk-Z7QHAORV.js";
 import {
   BaseComponent
-} from "./chunk-HHH6HE4B.js";
-import "./chunk-VLKHFF7D.js";
+} from "./chunk-3L4SUOTW.js";
+import "./chunk-UAISDMQD.js";
 import {
   BaseStyle
-} from "./chunk-ZRMQSJJP.js";
-import "./chunk-US7LRVFB.js";
+} from "./chunk-3INLSIWW.js";
 import {
   SharedModule
-} from "./chunk-PIJ2I2NR.js";
+} from "./chunk-VDPHF3G3.js";
 import {
   addClass,
   getWindowScrollLeft,
@@ -20,7 +19,6 @@ import {
   isRTL,
   removeClass
 } from "./chunk-GFVF2TMO.js";
-import "./chunk-PXYLXCRT.js";
 import {
   NG_VALUE_ACCESSOR
 } from "./chunk-P5LPBBT3.js";
@@ -75,9 +73,11 @@ import {
   ɵɵtemplate,
   ɵɵviewQuery
 } from "./chunk-YQZEX5Y4.js";
-import "./chunk-WPM5VTLQ.js";
 import "./chunk-PEBH6BBU.js";
+import "./chunk-WPM5VTLQ.js";
 import "./chunk-4S3KYZTJ.js";
+import "./chunk-US7LRVFB.js";
+import "./chunk-PXYLXCRT.js";
 import "./chunk-4MWRP73S.js";
 
 // node_modules/primeng/fesm2022/primeng-slider.mjs

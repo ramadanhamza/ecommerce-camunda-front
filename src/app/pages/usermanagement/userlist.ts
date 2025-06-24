@@ -11,15 +11,17 @@ import {IconField} from 'primeng/iconfield';
 import {InputIcon} from 'primeng/inputicon';
 import { TasksService } from '../service/tasks.service';
 import { Order } from '@/types/order';
+import { TaskDto } from '@/types/taskDto';
 
 @Component({
     selector: 'user-list',
     standalone: true,
     imports: [CommonModule, TableModule, InputTextModule, ProgressBarModule, ButtonModule, IconField, InputIcon],
     template: `<div class="card">
+        <h2 class="text-2xl font-bold">Demandes de financiement</h2>
         <p-table
             #dt
-            [value]="orders"
+            [value]="taskDtos"
             [paginator]="true"
             paginatorDropdownAppendTo="body"
             [rows]="10"
@@ -46,14 +48,14 @@ import { Order } from '@/types/order';
                     <th pSortableColumn="signature" class="white-space-nowrap" style="width:25%"><span class="flex items-center gap-2">Signature <p-sortIcon field="signature"></p-sortIcon></span></th>
                 </tr>
             </ng-template>
-            <ng-template #body let-order>
+            <ng-template #body let-taskDto>
                 <tr>
-                    <td>{{ order.id }}</td>
-                    <td>John Doe</td>
-                    <td>{{ order.amountToBorrow }}</td>
-                    <td><p-button [label]="order.decision ? 'Accepté' : 'Refusé'" [severity]="order.decision ? 'success' : 'danger'" outlined/></td>
+                    <td>{{ taskDto.order.id }}</td>
+                    <td>Hamza Ramadan</td>
+                    <td>{{ taskDto.order.amountToBorrow }}</td>
+                    <td><p-button label="Non prise" severity="warn" outlined/></td>
                     <td><p-button label="Non signé" severity="warn" outlined/></td>
-                    
+                    <td><p-button label="Détails" icon="pi pi-file-plus" iconPos="right" (onClick)="goToOrderDetails(taskDto.processInstanceId)"></p-button></td>
                 </tr>
             </ng-template>
         </p-table>
@@ -62,7 +64,7 @@ import { Order } from '@/types/order';
 })
 export class UserList {
     customers: Customer[] = [];
-    orders: Order[] = [];
+    taskDtos: TaskDto[] = [];
 
     constructor(
         private customerService: CustomerService,
@@ -72,10 +74,14 @@ export class UserList {
 
     ngOnInit() {
         this.customerService.getCustomersLarge().then((customers) => (this.customers = customers));
-        this.tasksService.findAllOrders().subscribe((orders: any) => {
-            this.orders = orders;
-            console.log("data : ", orders);
+        this.tasksService.getTasksByDefinitionKey("task_decision_gestionnaire").subscribe((taskDtos: any) => {
+            this.taskDtos = taskDtos;
+            console.log("data : ", taskDtos);
         });
+    }
+
+    goToOrderDetails(processInstanceId: number) {
+        this.router.navigate(['/ecommerce/order-summary/' + processInstanceId]);
     }
 
     onGlobalFilter(table: Table, event: Event) {
