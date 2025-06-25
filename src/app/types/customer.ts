@@ -15,6 +15,8 @@ export interface Customer {
     company?: string;
     date?: string;
     status?: string;
+    verified?: boolean;
     activity?: number;
     representative?: Representative;
+    balance?: number;
 }
