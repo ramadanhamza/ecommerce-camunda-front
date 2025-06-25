@@ -9,7 +9,7 @@ import { CardModule } from 'primeng/card';
 
 @Component({
     selector: 'app-order-summary',
-    imports: [CommonModule, ButtonModule, CardModule, RouterLink],
+    imports: [CommonModule, ButtonModule, CardModule],
     template: `
         <!-- Main View: Both cards are now always visible -->
 <div>
