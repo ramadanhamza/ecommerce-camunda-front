@@ -26,17 +26,6 @@ export class AppMenu {
     ngOnInit() {
         this.model = [
             {
-                label: 'E-Commerce',
-                icon: 'pi pi-fw pi-wallet',
-                items: [
-                    {
-                        label: 'Order Summary',
-                        icon: 'pi pi-fw pi-file',
-                        routerLink: ['ecommerce/order-summary'],
-                    },
-                ],
-            },
-            {
                 label: 'User Management',
                 icon: 'pi pi-fw pi-user',
                 items: [
