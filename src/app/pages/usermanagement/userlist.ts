@@ -18,7 +18,7 @@ import { TaskDto } from '@/types/taskDto';
     standalone: true,
     imports: [CommonModule, TableModule, InputTextModule, ProgressBarModule, ButtonModule, IconField, InputIcon],
     template: `<div class="card">
-        <h2 class="text-2xl font-bold">Demandes de financiement</h2>
+        <h2 class="text-2xl font-bold">Demandes de financement</h2>
         <p-table
             #dt
             [value]="taskDtos"
