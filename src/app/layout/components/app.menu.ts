@@ -26,11 +26,11 @@ export class AppMenu {
     ngOnInit() {
         this.model = [
             {
-                label: 'User Management',
+                label: 'Demandes des clients',
                 icon: 'pi pi-fw pi-user',
                 items: [
                     {
-                        label: 'List',
+                        label: 'Liste des demandes',
                         icon: 'pi pi-fw pi-list',
                         routerLink: ['profile/list'],
                     }
