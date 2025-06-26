@@ -10,7 +10,6 @@ import {ButtonModule} from 'primeng/button';
 import {IconField} from 'primeng/iconfield';
 import {InputIcon} from 'primeng/inputicon';
 import { TasksService } from '../service/tasks.service';
-import { Order } from '@/types/order';
 import { TaskDto } from '@/types/taskDto';
 
 @Component({
@@ -43,7 +42,7 @@ import { TaskDto } from '@/types/taskDto';
                 <tr>
                     <th pSortableColumn="id" class="white-space-nowrap" style="width:10%"><span class="flex items-center gap-2">ID <p-sortIcon field="id"></p-sortIcon></span></th>
                     <th pSortableColumn="nomClient" class="white-space-nowrap" style="width:25%"><span class="flex items-center gap-2">Nom du client <p-sortIcon field="nomClient"></p-sortIcon></span></th>
-                    <th pSortableColumn="amountToBorrow" class="white-space-nowrap" style="width:15%"><span class="flex items-center gap-2">Montant <p-sortIcon field="amountToBorrow"></p-sortIcon></span></th>
+                    <th pSortableColumn="amountToBorrow" class="white-space-nowrap" style="width:15%"><span class="flex items-center gap-2">Montant (MAD) <p-sortIcon field="amountToBorrow"></p-sortIcon></span></th>
                     <th pSortableColumn="decision" class="white-space-nowrap" style="width:25%"><span class="flex items-center gap-2">Décision <p-sortIcon field="decision"></p-sortIcon></span></th>
                     <th pSortableColumn="signature" class="white-space-nowrap" style="width:25%"><span class="flex items-center gap-2">Signature <p-sortIcon field="signature"></p-sortIcon></span></th>
                 </tr>
@@ -52,7 +51,7 @@ import { TaskDto } from '@/types/taskDto';
                 <tr>
                     <td>{{ taskDto.order.id }}</td>
                     <td>Hamza Ramadan</td>
-                    <td>{{ taskDto.order.amountToBorrow }}</td>
+                    <td>{{ taskDto.order.borrowAmount }}</td>
                     <td><p-button label="Non prise" severity="warn" outlined/></td>
                     <td><p-button label="Non signé" severity="warn" outlined/></td>
                     <td><p-button label="Détails" icon="pi pi-file-plus" iconPos="right" (onClick)="goToOrderDetails(taskDto.processInstanceId)"></p-button></td>
