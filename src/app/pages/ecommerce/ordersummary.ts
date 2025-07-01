@@ -130,7 +130,8 @@ import { CardModule } from 'primeng/card';
                         <div class="p-3 bg-surface-50 dark:bg-surface-700 font-bold rounded-t-lg text-surface-700 dark:text-surface-200"><i class="pi pi-check-circle mr-2"></i>Décision</div>
                         <div class="p-4 flex justify-end gap-2">
                             <button pButton pRipple label="Demander plus d'informations" icon="pi pi-info-circle" class="p-button-outlined"></button>
-                            <button pButton pRipple label="Approuver" icon="pi pi-check" class="p-button-success" (click)="completeDecisionTask(this.task.processInstanceId!, true)"></button>
+                            <button pButton pRipple *ngIf="this.order.decision == true || !this.order.decision" [label]="this.order.decision == true ? 'Approuvé' : 'Approuver'" icon="pi pi-check" class="p-button-success" [disabled]="this.order.decision" (click)="completeDecisionTask(this.task.processInstanceId!, true)"></button>
+                            <button pButton pRipple *ngIf="this.order.decision == false || !this.order.decision" [label]="this.order.decision == false ? 'Refusé' : 'Refuser'" icon="pi pi-times" class="p-button-danger" [disabled]="this.order.decision" (click)="completeDecisionTask(this.task.processInstanceId!, false)"></button>
                         </div>
                     </div>
                 </div>
