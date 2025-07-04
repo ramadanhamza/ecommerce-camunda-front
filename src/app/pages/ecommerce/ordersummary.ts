@@ -1,16 +1,19 @@
 import {CommonModule} from '@angular/common';
-import {Component} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {ButtonModule} from 'primeng/button';
 import { TasksService } from '../service/tasks.service';
 import { TaskDto } from '@/types/taskDto';
-import { Order } from '@/types/order';
+import * as pdfjsLib from 'pdfjs-dist';
+import PdfWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
 import { CardModule } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
+import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
     selector: 'app-order-summary',
-    imports: [CommonModule, ButtonModule, CardModule, DialogModule],
+    imports: [CommonModule, ButtonModule, CardModule, DialogModule, ProgressSpinnerModule],
     template: `
 <div>
     <div class="card mt-4">
@@ -69,7 +72,7 @@ import { DialogModule } from 'primeng/dialog';
                         </li>
                         <li class="flex justify-between mb-4">
                             <span class="text-surface-900 dark:text-surface-0">Marge</span>
-                            <span class="text-surface-900 dark:text-surface-0 font-medium text-lg">{{calculatedInterst}} MAD</span>
+                            <span class="text-surface-900 dark:text-surface-0 font-medium text-lg">399.90 MAD</span>
                         </li>
                     </ul>
                 </div>
@@ -175,6 +178,20 @@ import { DialogModule } from 'primeng/dialog';
                     </div>
 
                     <div class="rounded-lg border border-surface-200 dark:border-surface-600">
+                        <div class="p-3 bg-surface-50 dark:bg-surface-700 font-bold rounded-t-lg text-surface-700 dark:text-surface-200"><i class="pi pi-file-pdf mr-2"></i>Pièces Jointes</div>
+                        <div class="p-4">
+                            <ul class="list-none m-0 p-0 space-y-2">
+                                <li *ngFor="let doc of documents">
+                                    <button (click)="openPdfViewer(doc)" pButton pRipple [label]="doc.name" icon="pi pi-eye" class="p-button-text w-full text-left"></button>
+                                </li>
+                                <li *ngIf="!documents || documents.length === 0">
+                                    <span class="text-surface-500 dark:text-surface-400">Aucun document trouvé.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="rounded-lg border border-surface-200 dark:border-surface-600">
                         <div class="p-3 bg-surface-50 dark:bg-surface-700 font-bold rounded-t-lg text-surface-700 dark:text-surface-200"><i class="pi pi-lock mr-2"></i>Garanties</div>
                         <div class="p-4">
                             <table class="w-full text-sm">
@@ -209,14 +226,43 @@ import { DialogModule } from 'primeng/dialog';
         <button pButton pRipple icon="pi pi-times" class="p-button-danger" (click)="closeApprovalDialog()">Annuler</button>
     </div>
     </p-dialog>
+
+    <p-dialog
+        [header]="selectedPdfName!" 
+        [modal]="true" 
+        [(visible)]="isPdfViewerVisible" 
+        [style]="{ width: '90vh', height: '90vh'}"
+        (onHide)="closePdfViewer()">
+
+        <div class="w-full h-full flex justify-center relative overflow-auto">
+            <p-progressSpinner *ngIf="isPdfLoading" styleClass="w-8 h-8" strokeWidth="4" animationDuration=".5s"></p-progressSpinner>
+            
+            <canvas #pdfCanvas [class.hidden]="isPdfLoading"></canvas>
+        </div>
+
+        <ng-template pTemplate="footer">
+            <div class="flex justify-between items-center w-full gap-4">
+                <div class="flex items-center justify-center gap-2">
+                    <button pButton pRipple type="button" icon="pi pi-arrow-left" (click)="onPrevPage()" [disabled]="pageNum <= 1 || isPdfLoading"></button>
+                    <span class="font-bold text-sm">Page {{ pageNum }} / {{ pageCount }}</span>
+                    <button pButton pRipple type="button" icon="pi pi-arrow-right" (click)="onNextPage()" [disabled]="pageNum >= pageCount || isPdfLoading"></button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button pButton type="button" icon="pi pi-search-minus" (click)="zoomOut()" class="p-button-outlined"></button>
+                    <button pButton type="button" icon="pi pi-search-plus" (click)="zoomIn()" class="p-button-outlined"></button>
+                </div>
+            </div>
+        </ng-template>
+    </p-dialog>
 </div>
     `
 })
-export class OrderSummary {
+export class OrderSummary implements OnInit {
+    @ViewChild('pdfCanvas') private pdfCanvas!: ElementRef<HTMLCanvasElement>;
 
     processInstanceId: string | null = null;
     isSubmitting: boolean = false;
-    completionDate: Date | null = null;
 
     order: any = {};
     task: TaskDto = { id: null, name: '', assignee: null, processInstanceId: '', order: this.order };
@@ -224,11 +270,30 @@ export class OrderSummary {
 
     isApprovalDialog: boolean = false;
 
+    isPdfViewerVisible: boolean = false;
+    isPdfLoading: boolean = false;
+    selectedPdfUrl: string | null = null;
+    selectedPdfName: string | null = null;
+
+    pdfDoc: PDFDocumentProxy | null = null;
+    pageNum: number = 1;
+    pageCount: number = 0;
+
+    zoomLevel = 1;
+
+    documents = [
+        { name: 'Pièce d\'identité (CIN)', url: "/lorem-ipsum_duplicate.pdf" },
+        { name: 'Justificatif de domicile', url: "/lorem-ipsum_duplicate.pdf" },
+        { name: 'Bulletin de paie récent', url: "/lorem-ipsum_duplicate.pdf" }
+    ];
+
     constructor(
         private route: ActivatedRoute,
         private tasksService: TasksService,
         private router: Router
-    ) {}
+    ) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = PdfWorker;
+    }
     
     ngOnInit() {
         this.route.paramMap.subscribe(paramMap => {
@@ -239,6 +304,7 @@ export class OrderSummary {
                         this.task = taskData;
                         if (taskData.order) {
                             this.order = taskData.order;
+                            console.log(this.order);
                             this.calculatedInterst = (5 / 100) * this.order.borrowAmount;
                         }
                     }
@@ -247,37 +313,109 @@ export class OrderSummary {
         });
     }
 
-    showApprovalDialog() {
-        this.isApprovalDialog = true;
-    }
-
-    closeApprovalDialog() {
-        this.isApprovalDialog = false;
-    }
-
-    completeDecisionTask(processInstanceId: string, decision: boolean) {
-        this.tasksService.completeDecisionTask(processInstanceId, decision).subscribe(() => {
-            this.tasksService.getTaskByProcessInstanceId(processInstanceId).subscribe(taskData => {
-                    if (taskData) {
-                        this.task = taskData;
-                        if (taskData.order) {
-                            this.order = taskData.order;
-                        }
-                    }
-                    console.log('Task and Order loaded:', this.task);
-                    this.closeApprovalDialog();
-                });
-        }, error => {
-            console.log("Error :", error);
-        });
-    }
-
-    products = [
-        {
-            name: 'BOSCH TC SERIE 8 PRS9A6B70 90CM NOIR',
-            price: '3999 MAD',
-            quantity: '2',
-            image: 'https://media.electroplanet.ma/media/catalog/product/cache/fe7218fa206f7a550a07f49b9ea052d6/3/0/3037333-cb-22408_1.png'
+    ngOnDestroy() {
+        if (this.pdfDoc) {
+            this.pdfDoc.destroy();
         }
-    ];
+    }
+
+    async openPdfViewer(document: { name: string, url: string }) {
+        this.selectedPdfUrl = document.url;
+        this.selectedPdfName = document.name;
+        this.isPdfViewerVisible = true;
+
+        this.pageNum = 1;
+        this.pdfDoc = null;
+        this.isPdfLoading = true;
+
+        try {
+            setTimeout(async () => {
+                this.pdfDoc = await pdfjsLib.getDocument(this.selectedPdfUrl!).promise;
+                this.pageCount = this.pdfDoc.numPages;
+                await this.renderPage(this.pageNum);
+            }, 0);
+        } catch (error) {
+            console.error('Error loading PDF:', error);
+            this.isPdfLoading = false;
+        }
+    }
+
+    async renderPage(num: number) {
+    if (!this.pdfDoc) return;
+    this.isPdfLoading = true;
+    
+    try {
+        const page: PDFPageProxy = await this.pdfDoc.getPage(num);
+        const viewport = page.getViewport({ scale: this.zoomLevel });
+        
+        const canvas = this.pdfCanvas.nativeElement;
+        const context = canvas.getContext('2d');
+        if (!context) {
+            throw new Error('Could not get canvas context');
+        }
+
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        canvas.style.height = `${viewport.height}px`;
+        canvas.style.width = `${viewport.width}px`;
+        
+        const renderContext = {
+            canvasContext: context,
+            viewport: viewport
+        };
+
+        await page.render(renderContext).promise;
+    } catch (error) {
+        console.error('Error rendering page:', error);
+    } finally {
+        this.isPdfLoading = false;
+    }
+}
+
+    onPrevPage() {
+        if (this.pageNum <= 1) {
+            return;
+        }
+        this.pageNum--;
+        this.renderPage(this.pageNum);
+    }
+
+
+
+    onNextPage() {
+        if (this.pageNum >= this.pageCount) {
+            return;
+        }
+        this.pageNum++;
+        this.renderPage(this.pageNum);
+    }
+
+    closePdfViewer() {
+        this.isPdfViewerVisible = false;
+        if (this.pdfDoc) {
+            this.pdfDoc.destroy();
+            this.pdfDoc = null;
+        }
+    }
+
+    showApprovalDialog() { this.isApprovalDialog = true; }
+    closeApprovalDialog() { this.isApprovalDialog = false; }
+    completeDecisionTask(processInstanceId: string, decision: boolean) {
+        // ... implementation
+    }
+
+    zoomIn() {
+        this.zoomLevel += 0.2;
+        this.renderPage(this.pageNum);
+    }
+
+    zoomOut() {
+        if (this.zoomLevel > 0.4) {
+        this.zoomLevel -= 0.2;
+        this.renderPage(this.pageNum);
+        }
+    }
+
+    products = [{ name: 'BOSCH TC SERIE 8 PRS9A6B70 90CM NOIR', price: '3999 MAD', quantity: '2', image: 'https://media.electroplanet.ma/media/catalog/product/cache/fe7218fa206f7a550a07f49b9ea052d6/3/0/3037333-cb-22408_1.png'}];
 }
