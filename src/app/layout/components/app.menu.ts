@@ -32,7 +32,7 @@ export class AppMenu {
                     {
                         label: 'Liste des demandes',
                         icon: 'pi pi-fw pi-list',
-                        routerLink: ['profile/list'],
+                        routerLink: ['profile/demandes-financement'],
                     }
                 ],
             }

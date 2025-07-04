@@ -1,93 +1,147 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {InputTextModule} from 'primeng/inputtext';
 import {Table, TableModule} from 'primeng/table';
 import {ProgressBarModule} from 'primeng/progressbar';
 import {CustomerService} from '@/pages/service/customer.service';
 import {Router} from '@angular/router';
-import {Customer} from '@/types/customer';
 import {ButtonModule} from 'primeng/button';
-import {IconField} from 'primeng/iconfield';
-import {InputIcon} from 'primeng/inputicon';
+import {IconFieldModule} from 'primeng/iconfield';
+import {InputIconModule} from 'primeng/inputicon';
+import {TagModule} from 'primeng/tag';
 import { TasksService } from '../service/tasks.service';
 import { TaskDto } from '@/types/taskDto';
 
 @Component({
     selector: 'user-list',
     standalone: true,
-    imports: [CommonModule, TableModule, InputTextModule, ProgressBarModule, ButtonModule, IconField, InputIcon],
+    imports: [CommonModule, TableModule, InputTextModule, ProgressBarModule, ButtonModule, IconFieldModule, InputIconModule, TagModule],
     template: `<div class="card">
-        <h2 class="text-2xl font-bold">Demandes de financement</h2>
-        <p-table
-            #dt
-            [value]="taskDtos"
-            [paginator]="true"
-            paginatorDropdownAppendTo="body"
-            [rows]="10"
-            [showCurrentPageReport]="true"
-            responsiveLayout="scroll"
-            currentPageReportTemplate="Affichage de {first} à {last} sur {totalRecords} entrées"
-            [rowsPerPageOptions]="[10, 25, 50]"
-            [globalFilterFields]="['name', 'country.name', 'representative.name']"
-        >
-            <ng-template #caption>
-                <div class="flex flex-wrap gap-2 items-center justify-between">
-                    <p-icon-field class="w-full sm:w-80 order-1 sm:order-none">
-                        <p-inputicon class="pi pi-search" />
-                        <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Chercher..." class="w-full" />
-                    </p-icon-field>
-                </div>
-            </ng-template>
-            <ng-template #header>
-                <tr>
-                    <th pSortableColumn="id" class="white-space-nowrap" style="width:10%"><span class="flex items-center gap-2">ID <p-sortIcon field="id"></p-sortIcon></span></th>
-                    <th pSortableColumn="nomClient" class="white-space-nowrap" style="width:25%"><span class="flex items-center gap-2">Nom du client <p-sortIcon field="nomClient"></p-sortIcon></span></th>
-                    <th pSortableColumn="amountToBorrow" class="white-space-nowrap" style="width:15%"><span class="flex items-center gap-2">Montant (MAD) <p-sortIcon field="amountToBorrow"></p-sortIcon></span></th>
-                    <th pSortableColumn="decision" class="white-space-nowrap" style="width:25%"><span class="flex items-center gap-2">Décision <p-sortIcon field="decision"></p-sortIcon></span></th>
-                    <th pSortableColumn="signature" class="white-space-nowrap" style="width:25%"><span class="flex items-center gap-2">Signature <p-sortIcon field="signature"></p-sortIcon></span></th>
-                </tr>
-            </ng-template>
-            <ng-template #body let-taskDto>
-                <tr>
-                    <td>{{ taskDto.order.id }}</td>
-                    <td>Hamza Ramadan</td>
-                    <td>{{ taskDto.order.borrowAmount }}</td>
-                    <td><p-button label="Non prise" severity="warn" outlined/></td>
-                    <td><p-button label="Non signé" severity="warn" outlined/></td>
-                    <td><p-button label="Détails" icon="pi pi-file-plus" iconPos="right" (onClick)="goToOrderDetails(taskDto.processInstanceId)"></p-button></td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </div>`,
+    <h2 class="text-2xl font-bold mb-4">Demandes de financement</h2>
+
+    <p-table
+        #dt
+        [value]="taskDtos"
+        [paginator]="true"
+        paginatorDropdownAppendTo="body"
+        [rows]="10"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Affichage de {first} à {last} sur {totalRecords} demandes"
+        responsiveLayout="scroll"
+        [loading]="loading"
+        stateStorage="session" 
+        stateKey="financement-requests-table"
+        [globalFilterFields]="['order.id', 'order.clientName', 'order.borrowAmount', 'decision']">
+
+        <ng-template pTemplate="caption" >
+            <p-icon-field iconPosition="left">
+                <p-inputicon class="pi pi-search" />
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Chercher une demande..." class="w-full sm:w-auto" />
+            </p-icon-field>
+        </ng-template>
+
+        <ng-template pTemplate="header">
+            <tr>
+                <th pSortableColumn="order.id" style="width:10%">
+                    <span class="flex items-center gap-2">ID <p-sortIcon field="order.id"></p-sortIcon></span>
+                </th>
+                <th pSortableColumn="order.clientName" style="width:30%">
+                    <span class="flex items-center gap-2">Nom du client <p-sortIcon field="order.clientName"></p-sortIcon></span>
+                </th>
+                <th pSortableColumn="order.borrowAmount" style="width:20%">
+                    <span class="flex items-center gap-2">Montant demandé <p-sortIcon field="order.borrowAmount"></p-sortIcon></span>
+                </th>
+                <th pSortableColumn="decision" style="width:20%">
+                    <span class="flex items-center gap-2">Statut <p-sortIcon field="decision"></p-sortIcon></span>
+                </th>
+                <th style="width:15%; text-align: center;">Détails</th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-taskDto>
+            <tr>
+                <td>{{ taskDto.order.id }}</td>
+                <td>Hamza Ramadan</td>
+                <!-- Use the currency pipe for proper formatting -->
+                <td>{{ taskDto.order.borrowAmount }} MAD</td>
+                <td>
+                    <!-- Use a Tag for a cleaner status display. Assumes taskDto.decision exists -->
+                    <p-tag [value]="taskDto.order.decision" [severity]="getSeverity(taskDto.order.decision)"></p-tag>
+                </td>
+                <td style="text-align: center;">
+                    <button pButton pRipple icon="pi pi-arrow-right" class="p-button-rounded p-button-text" (click)="goToOrderDetails(taskDto.processInstanceId)" pTooltip="Voir les détails" tooltipPosition="top"></button>
+                </td>
+            </tr>
+        </ng-template>
+        
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td colspan="5" class="text-center">Aucune demande de financement trouvée.</td>
+            </tr>
+        </ng-template>
+
+    </p-table>
+</div>`,
     providers: [CustomerService]
 })
-export class UserList {
-    customers: Customer[] = [];
+export class UserList implements OnInit {
     taskDtos: TaskDto[] = [];
+    status: string[] = ["En cours de traitement", "Analyse automatique en cours", "En attente d'informations complémentaires", "Validation analyste", "Pré-accepté", "Accepté", "Signé", "Débloqué", "Rejeté"];
+    loading: boolean = true;
 
     constructor(
-        private customerService: CustomerService,
         private tasksService: TasksService,
         private router: Router
     ) {}
 
     ngOnInit() {
-        this.customerService.getCustomersLarge().then((customers) => (this.customers = customers));
-        this.tasksService.getTasksByDefinitionKey("task_decision_gestionnaire").subscribe((taskDtos: any) => {
-            this.taskDtos = taskDtos;
-            console.log("data : ", taskDtos);
+        this.tasksService.getTasksByDefinitionKey("task_decision_gestionnaire").subscribe({
+            next: (taskDtos: TaskDto[]) => {
+                this.taskDtos = taskDtos;
+                this.loading = false;
+                this.taskDtos.forEach((task, index) => {
+                    task.order!.decision = this.status[index];
+                });
+                console.log("data : ", taskDtos);
+            },
+            error: (err) => {
+                console.error("Failed to fetch tasks", err);
+                this.loading = false;
+            }
         });
-    }
-
-    goToOrderDetails(processInstanceId: number) {
-        this.router.navigate(['/ecommerce/order-summary/' + processInstanceId]);
     }
 
     onGlobalFilter(table: Table, event: Event) {
         table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
     }
 
-    navigateToCreateUser() {
-        this.router.navigate(['profile/create']);
+    goToOrderDetails(processInstanceId: number) {
+        this.router.navigate(['/ecommerce/order-summary/', processInstanceId]);
     }
+
+    getSeverity(decision: string | null): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | undefined {
+  switch (decision) {
+    case 'En cours de traitement':
+    case 'Analyse automatique en cours':
+    case 'Validation analyste':
+      return 'info';
+
+    case 'En attente d\'informations complémentaires':
+    case 'Pré-accepté':
+      return 'warn';
+
+    case 'Accepté':
+    case 'Signé':
+    case 'Débloqué':
+      return 'success';
+
+    case 'Rejeté':
+      return 'danger';
+
+    default:
+      return 'secondary';
+  }
+}
+
 }

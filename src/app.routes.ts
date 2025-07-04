@@ -8,6 +8,10 @@ export const appRoutes: Routes = [
         component: AppLayout,
         children: [
             {
+                path: '',
+                redirectTo: 'profile', pathMatch: 'full'
+            },
+            {
                 path: 'pages',
                 loadChildren: () => import('@/pages/pages.routes'),
             },
@@ -15,7 +19,7 @@ export const appRoutes: Routes = [
                 path: 'ecommerce',
                 loadChildren: () =>
                     import('@/pages/ecommerce/ecommerce.routes'),
-                data: { breadcrumb: 'E-Commerce' },
+                data: { breadcrumb: 'Demandes de financement' },
             },
             {
                 path: 'profile',
