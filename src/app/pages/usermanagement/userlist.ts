@@ -46,13 +46,22 @@ import { TaskDto } from '@/types/taskDto';
                 <th pSortableColumn="order.id" style="width:10%">
                     <span class="flex items-center gap-2">ID <p-sortIcon field="order.id"></p-sortIcon></span>
                 </th>
-                <th pSortableColumn="order.clientName" style="width:30%">
+                <th pSortableColumn="order.clientName" style="width:15%">
+                    <span class="flex items-center gap-2">Numero de compte <p-sortIcon field="order.clientName"></p-sortIcon></span>
+                </th>
+                <th pSortableColumn="order.clientName" style="width:15%">
+                    <span class="flex items-center gap-2">Numero client <p-sortIcon field="order.clientName"></p-sortIcon></span>
+                </th>
+                <th pSortableColumn="order.clientName" style="width:15%">
                     <span class="flex items-center gap-2">Nom du client <p-sortIcon field="order.clientName"></p-sortIcon></span>
                 </th>
-                <th pSortableColumn="order.borrowAmount" style="width:20%">
+                <th pSortableColumn="order.borrowAmount" style="width:15%">
                     <span class="flex items-center gap-2">Montant demandé <p-sortIcon field="order.borrowAmount"></p-sortIcon></span>
                 </th>
-                <th pSortableColumn="decision" style="width:20%">
+                <th pSortableColumn="order.clientName" style="width:15%">
+                    <span class="flex items-center gap-2">Agence <p-sortIcon field="order.clientName"></p-sortIcon></span>
+                </th>
+                <th pSortableColumn="decision" style="width:15%">
                     <span class="flex items-center gap-2">Statut <p-sortIcon field="decision"></p-sortIcon></span>
                 </th>
                 <th style="width:15%; text-align: center;">Détails</th>
@@ -62,9 +71,12 @@ import { TaskDto } from '@/types/taskDto';
         <ng-template pTemplate="body" let-taskDto>
             <tr>
                 <td>{{ taskDto.order.id }}</td>
+                <td>{{ taskDto.order.numeroDeCompte }}</td>
+                <td>{{ taskDto.order.numeroClient }}</td>
                 <td>Hamza Ramadan</td>
                 <!-- Use the currency pipe for proper formatting -->
                 <td>{{ taskDto.order.borrowAmount }} MAD</td>
+                <td>{{ taskDto.order.agence }}</td>
                 <td>
                     <!-- Use a Tag for a cleaner status display. Assumes taskDto.decision exists -->
                     <p-tag [value]="taskDto.order.decision" [severity]="getSeverity(taskDto.order.decision)"></p-tag>
@@ -86,8 +98,43 @@ import { TaskDto } from '@/types/taskDto';
     providers: [CustomerService]
 })
 export class UserList implements OnInit {
-    taskDtos: TaskDto[] = [];
+    taskDtos: any[] = [];
     status: string[] = ["En cours de traitement", "Analyse automatique en cours", "En attente d'informations complémentaires", "Validation analyste", "Pré-accepté", "Accepté", "Signé", "Débloqué", "Rejeté"];
+    numeroDeCompte: string[] = [
+    "001234567890",
+    "002345678901",
+    "003456789012",
+    "004567890123",
+    "005678901234",
+    "006789012345",
+    "007890123456",
+    "008901234567",
+    "009012345678"
+    ];
+
+    numeroClient: string[] = [
+    "C12345678",
+    "C23456789",
+    "C34567890",
+    "C45678901",
+    "C56789012",
+    "C67890123",
+    "C78901234",
+    "C89012345",
+    "C90123456"
+    ];
+
+    agence: string[] = [
+    "Agence Rabat Hassan",
+    "Agence Casablanca Centre",
+    "Agence Marrakech Guéliz",
+    "Agence Fès Atlas",
+    "Agence Tanger Corniche",
+    "Agence Agadir Talborjt",
+    "Agence Oujda Al Qods",
+    "Agence Meknès Ville Nouvelle",
+    "Agence Kénitra Centre"
+    ];
     loading: boolean = true;
 
     constructor(
@@ -97,10 +144,14 @@ export class UserList implements OnInit {
 
     ngOnInit() {
         this.tasksService.getTasksByDefinitionKey("task_decision_gestionnaire").subscribe({
-            next: (taskDtos: TaskDto[]) => {
+            next: (taskDtos: any[]) => {
                 this.taskDtos = taskDtos;
                 this.loading = false;
                 this.taskDtos.forEach((task, index) => {
+                    task.order!.decision = this.status[index];
+                    task.order!.agence = this.agence[index];
+                    task.order!.numeroDeCompte = this.numeroDeCompte[index];
+                    task.order!.numeroClient = this.numeroClient[index];
                     task.order!.decision = this.status[index];
                 });
                 console.log("data : ", taskDtos);

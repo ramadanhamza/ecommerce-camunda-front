@@ -71,7 +71,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
                             <span class="text-surface-900 dark:text-surface-0 font-medium text-lg">24 mois</span>
                         </li>
                         <li class="flex justify-between mb-4">
-                            <span class="text-surface-900 dark:text-surface-0">Marge</span>
+                            <span class="text-surface-900 dark:text-surface-0">Marge bénéficiaire</span>
                             <span class="text-surface-900 dark:text-surface-0 font-medium text-lg">399.90 MAD</span>
                         </li>
                     </ul>
@@ -402,7 +402,20 @@ export class OrderSummary implements OnInit {
     showApprovalDialog() { this.isApprovalDialog = true; }
     closeApprovalDialog() { this.isApprovalDialog = false; }
     completeDecisionTask(processInstanceId: string, decision: boolean) {
-        // ... implementation
+        this.tasksService.completeDecisionTask(processInstanceId, decision).subscribe(() => {
+            this.tasksService.getTaskByProcessInstanceId(processInstanceId).subscribe(taskData => {
+                    if (taskData) {
+                        this.task = taskData;
+                        if (taskData.order) {
+                            this.order = taskData.order;
+                        }
+                    }
+                    console.log('Task and Order loaded:', this.task);
+                    this.closeApprovalDialog();
+                });
+        }, error => {
+            console.log("Error :", error);
+        });
     }
 
     zoomIn() {
