@@ -75,7 +75,7 @@ import { TaskDto } from '@/types/taskDto';
                 <td>{{ taskDto.order.numeroClient }}</td>
                 <td>Hamza Ramadan</td>
                 <!-- Use the currency pipe for proper formatting -->
-                <td>{{ taskDto.order.borrowAmount }} MAD</td>
+                <td>{{ taskDto.order.amountToBorrow }} MAD</td>
                 <td>{{ taskDto.order.agence }}</td>
                 <td>
                     <!-- Use a Tag for a cleaner status display. Assumes taskDto.decision exists -->
@@ -143,7 +143,7 @@ export class UserList implements OnInit {
     ) {}
 
     ngOnInit() {
-        this.tasksService.getTasksByDefinitionKey("task_decision_gestionnaire").subscribe({
+        this.tasksService.getMockTasks().subscribe({
             next: (taskDtos: any[]) => {
                 this.taskDtos = taskDtos;
                 this.loading = false;

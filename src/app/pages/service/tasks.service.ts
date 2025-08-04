@@ -8,11 +8,16 @@ import { Observable } from 'rxjs';
 export class TasksService {
     constructor(private http: HttpClient) {}
 
+    mockApiUrl = 'http://localhost:3000';
     tasksApiUrl = 'http://localhost:8080/api/tasks';
     ordersApiUrl = 'http://localhost:8080/api/orders';
 
     getTasksByDefinitionKey(taskDefinitionKey: string): Observable<any> {
         return this.http.get(this.tasksApiUrl + "/taskDefinitionKey/" + taskDefinitionKey);
+    }
+
+    getMockTasks(): Observable<any> {
+        return this.http.get(this.mockApiUrl + "/getTasks");
     }
 
     getTaskByProcessInstanceId(processInstanceId: string): Observable<any> {

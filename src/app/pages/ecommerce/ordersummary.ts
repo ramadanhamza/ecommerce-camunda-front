@@ -57,22 +57,26 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
                         </li>
                         <li class="flex justify-between mb-4">
                             <span class="text-surface-900 dark:text-surface-0">Montant total</span>
-                            <span class="text-surface-900 dark:text-surface-0 font-medium text-lg">7998 MAD</span>
+                            <span class="text-surface-900 dark:text-surface-0 font-medium text-lg">154500 MAD</span>
                         </li>
                         <li class="flex justify-between mb-4">
                             <span class="text-surface-900 dark:text-surface-0">Apport personnel</span>
-                            <span class="text-surface-900 dark:text-surface-0 font-medium text-lg">998 MAD</span>
+                            <span class="text-surface-900 dark:text-surface-0 font-medium text-lg">24500 MAD</span>
+                        </li>
+                        <li class="flex justify-between mb-4">
+                            <span class="text-surface-900 dark:text-surface-0">Prix Réservation</span>
+                            <span class="text-surface-900 dark:text-surface-0 font-medium text-lg">1300 MAD</span>
                         </li>
                         <li class="flex justify-between mb-4">
                             <span class="text-surface-900 dark:text-surface-0">Montant financé</span>
-                            <span class="text-surface-900 dark:text-surface-0 font-medium text-lg">7000 MAD</span>
+                            <span class="text-surface-900 dark:text-surface-0 font-medium text-lg">130000 MAD</span>
                         <li class="flex justify-between mb-4">
                             <span class="text-surface-900 dark:text-surface-0">Durée du financement</span>
-                            <span class="text-surface-900 dark:text-surface-0 font-medium text-lg">24 mois</span>
+                            <span class="text-surface-900 dark:text-surface-0 font-medium text-lg">6 mois</span>
                         </li>
                         <li class="flex justify-between mb-4">
                             <span class="text-surface-900 dark:text-surface-0">Marge bénéficiaire</span>
-                            <span class="text-surface-900 dark:text-surface-0 font-medium text-lg">399.90 MAD</span>
+                            <span class="text-surface-900 dark:text-surface-0 font-medium text-lg">6500.00 MAD</span>
                         </li>
                     </ul>
                 </div>
@@ -107,19 +111,21 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
                 <div class="xl:col-span-5 flex flex-col gap-6">
                     <div class="rounded-lg border border-surface-200 dark:border-surface-600">
-                        <div class="p-3 bg-surface-50 dark:bg-surface-700 font-bold rounded-t-lg text-surface-700 dark:text-surface-200"><i class="pi pi-shopping-cart mr-2"></i>Financement</div>
+                        <div class="p-3 bg-surface-50 dark:bg-surface-700 font-bold rounded-t-lg text-surface-700 dark:text-surface-200">
+                            <i class="pi pi-car mr-2"></i>Financement Automobile
+                        </div>
                         <ul class="list-none m-0 p-4 space-y-3">
-                            <li class="flex justify-between"><span>Nature du bien :</span> <span class="font-semibold">Machine à Laver</span></li>
-                            <li class="flex justify-between"><span>Marque :</span> <span class="font-semibold">Samsung</span></li>
-                            <li class="flex justify-between"><span>Partenaire :</span> <span class="font-semibold">BOUSFIHA</span></li>
-                            <li class="flex justify-between"><span>Employeur :</span> <span class="font-semibold">RADEEMA</span></li>
-                            <li class="flex justify-between"><span>Prix :</span> <span class="font-semibold text-primary">7998 MAD</span></li>
-                            <li class="flex justify-between"><span>Ancienté du compte (mois) :</span> <span class="font-semibold">120</span></li>
-                            <li class="flex justify-between bg-surface-50 dark:bg-surface-700 p-2 rounded"><span>Montant MOURABAHA :</span> <span class="font-semibold">7000,00 MAD</span></li>
-                            <li class="flex justify-between bg-surface-50 dark:bg-surface-700 p-2 rounded"><span>HAMISH JIDYHA :</span> <span class="font-semibold">2000,00 MAD</span></li>
-                            <li class="flex justify-between"><span>Durée (mois) :</span></li>
-                            <li class="flex justify-between"><span>Taux Marge HT :</span></li>
-                            <li class="flex justify-between"><span>Montant échéance :</span></li>
+                            <li class="flex justify-between"><span>Type de véhicule :</span> <span class="font-semibold">Voiture</span></li>
+                            <li class="flex justify-between"><span>Marque :</span> <span class="font-semibold">Dacia</span></li>
+                            <li class="flex justify-between"><span>Modèle :</span> <span class="font-semibold">Logan</span></li>
+                            <li class="flex justify-between"><span>Prix voiture HT:</span> <span class="font-semibold text-primary">135000 MAD</span></li>
+                            <li class="flex justify-between"><span>Prix total TTC :</span> <span class="font-semibold text-primary">154500 MAD</span></li>
+                            <li class="flex justify-between"><span>Ancienté du compte (mois) :</span> <span class="font-semibold">84</span></li>
+                            <li class="flex justify-between bg-surface-50 dark:bg-surface-700 p-2 rounded"><span>Montant MOURABAHA :</span> <span class="font-semibold">130.000,00 MAD</span></li>
+                            <li class="flex justify-between bg-surface-50 dark:bg-surface-700 p-2 rounded"><span>HAMISH JIDYHA :</span> <span class="font-semibold">19.000,00 MAD</span></li>
+                            <li class="flex justify-between"><span>Durée (mois) :</span> <span class="font-semibold">6</span></li>
+                            <li class="flex justify-between"><span>Taux Marge HT :</span> <span class="font-semibold">5%</span></li>
+                            <li class="flex justify-between"><span>Montant échéance :</span> <span class="font-semibold">21983.73 MAD</span></li>
                         </ul>
                     </div>
 
@@ -430,5 +436,5 @@ export class OrderSummary implements OnInit {
         }
     }
 
-    products = [{ name: 'BOSCH TC SERIE 8 PRS9A6B70 90CM NOIR', price: '3999 MAD', quantity: '2', image: 'https://media.electroplanet.ma/media/catalog/product/cache/fe7218fa206f7a550a07f49b9ea052d6/3/0/3037333-cb-22408_1.png'}];
+    products = [{ name: 'Dacia Logan', price: '154500 MAD', quantity: '1', image: 'https://upload.wikimedia.org/wikipedia/commons/1/17/Dacia_Logan_III_%28cropped%29.jpg'}];
 }
